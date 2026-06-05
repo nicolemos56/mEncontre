@@ -1,0 +1,6 @@
+{
+  "name": "ForgeMatch",
+  "description": "Encontre o par de desenvolvimento perfeito para seus projetos e hackathons usando buscas auxiliadas por IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

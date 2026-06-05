@@ -1,0 +1,89 @@
+{
+  "usuarios": [
+    {
+      "id": "u1",
+      "nome": "Andrade Silva",
+      "email": "andrade@forgematch.ao",
+      "password": "password123",
+      "bio": "Desenvolvedor Frontend experiente apaixonado por interfaces refinadas e animações fluidas com Framer Motion e Tailwind. Ativo na comunidade tech de Angola.",
+      "skills": [
+        "React",
+        "Typescript",
+        "TailwindCSS",
+        "Vite",
+        "Framer Motion"
+      ],
+      "localizacao": "Luanda, Angola",
+      "contato": "github.com/andrade-dev",
+      "disponivel": true
+    },
+    {
+      "id": "u2",
+      "nome": "Cláudio Santos",
+      "email": "claudio@forgematch.ao",
+      "password": "password123",
+      "bio": "Engenheiro de Software focado no backend, modelagem de banco de dados e inteligência artificial. Criando novos microsserviços em FastAPI.",
+      "skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker",
+        "SQLAlchemy"
+      ],
+      "localizacao": "Luanda, Angola",
+      "contato": "linkedin.com/in/claudio-fastapi",
+      "disponivel": true
+    },
+    {
+      "id": "u3",
+      "nome": "Mariana Costa",
+      "email": "mariana@forgematch.br",
+      "password": "password123",
+      "bio": "Desenvolvedora Mobile especializada em React Native e soluções híbridas fluidas. Adoro Hackathons e coding sprints.",
+      "skills": [
+        "React Native",
+        "Javascript",
+        "iOS",
+        "Android",
+        "Redux"
+      ],
+      "localizacao": "São Paulo, Brasil",
+      "contato": "github.com/marianacodes",
+      "disponivel": true
+    },
+    {
+      "id": "u4",
+      "nome": "Diogo Neves",
+      "email": "diogo@forgematch.pt",
+      "password": "password123",
+      "bio": "Especialista em Go, sistemas distribuídos e infraestrutura escalável em nuvem com Kubernetes. Mentor de iniciantes.",
+      "skills": [
+        "Go",
+        "Docker",
+        "Kubernetes",
+        "gRPC",
+        "Redis"
+      ],
+      "localizacao": "Lisboa, Portugal",
+      "contato": "github.com/diogo-neves",
+      "disponivel": false
+    },
+    {
+      "id": "u5",
+      "nome": "Filipe Mendes",
+      "email": "filipe@forgematch.ao",
+      "password": "password123",
+      "bio": "Entusiasta de Web3, smart contracts e finanças descentralizadas (DeFi) com Solidity.",
+      "skills": [
+        "Solidity",
+        "Ethereum",
+        "Web3",
+        "Node.js"
+      ],
+      "localizacao": "Luanda, Angola",
+      "contato": "twitter.com/filipe_crypto",
+      "disponivel": true
+    }
+  ],
+  "matches": []
+}
