@@ -1249,6 +1249,8 @@ Retorne APENAS o JSON limpo, sem marcas adicionais de markdown fora do bloco jso
     }
   }
 
-  run();
+  if (!process.env.VERCEL) {
+    run();
+  }
 
   export default app;
