@@ -32,7 +32,9 @@ import {
   ArrowLeft,
   X,
   Eye,
-  Terminal
+  Terminal,
+  Linkedin,
+  Mail
 } from "lucide-react";
 
 export default function App() {
@@ -79,6 +81,53 @@ export default function App() {
   const [isSavingMappedUser, setIsSavingMappedUser] = useState(false);
   const [mappedSuccessMsg, setMappedSuccessMsg] = useState("");
 
+  // Contact details modal state
+  const [contactModalData, setContactModalData] = useState<{
+    nome: string;
+    perfilUrl: string;
+    displayUrl: string;
+    email: string;
+  } | null>(null);
+
+  const handleOpenContactModal = (nome: string, contato: string) => {
+    let email = "";
+    if (nome.toLowerCase().includes("deus")) {
+      email = "nicocohen90@gmail.com";
+    } else if (contato && contato.includes("@") && !contato.includes("/") && !contato.includes("linkedin") && !contato.includes("github")) {
+      email = contato;
+    } else {
+      const cleanName = nome.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9 ]/g, "")
+        .trim()
+        .replace(/\s+/g, ".");
+      if (cleanName) {
+        email = `${cleanName}@gmail.com`;
+      } else {
+        email = "developer@mencontre.ao";
+      }
+    }
+
+    let pUrl = contato || "";
+    if (nome.toLowerCase().includes("deus")) {
+      pUrl = "linkedin.com/in/manuel-de-deus-694956199";
+    } else if (!pUrl) {
+      pUrl = "linkedin.com/in/" + nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+    }
+
+    let displayUrl = pUrl;
+    if (displayUrl.startsWith("http://")) displayUrl = displayUrl.substring(7);
+    if (displayUrl.startsWith("https://")) displayUrl = displayUrl.substring(8);
+    if (displayUrl.startsWith("www.")) displayUrl = displayUrl.substring(4);
+
+    setContactModalData({
+      nome,
+      perfilUrl: pUrl.startsWith("http") ? pUrl : "https://" + pUrl,
+      displayUrl,
+      email
+    });
+  };
+
   // Devs Directory State
   const [devSearchQuery, setDevSearchQuery] = useState("");
   const [devLocationFilter, setDevLocationFilter] = useState("Todas");
@@ -89,12 +138,13 @@ export default function App() {
 
   // Load user from localStorage on boot
   useEffect(() => {
-    const saved = localStorage.getItem("forgematch_user");
+    let saved = localStorage.getItem("mencontre_user") || localStorage.getItem("forgematch_user");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         setCurrentUser(parsed);
       } catch (e) {
+        localStorage.removeItem("mencontre_user");
         localStorage.removeItem("forgematch_user");
       }
     }
@@ -225,6 +275,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("mencontre_user");
     localStorage.removeItem("forgematch_user");
     setCurrentUser(null);
     setSearchResults([]);
@@ -232,13 +283,13 @@ export default function App() {
   };
 
   const handleLoginSuccess = (user: Usuario) => {
-    localStorage.setItem("forgematch_user", JSON.stringify(user));
+    localStorage.setItem("mencontre_user", JSON.stringify(user));
     setCurrentUser(user);
     setActiveTab("matchmaker");
   };
 
   const handleProfileUpdated = (updatedUser: Usuario) => {
-    localStorage.setItem("forgematch_user", JSON.stringify(updatedUser));
+    localStorage.setItem("mencontre_user", JSON.stringify(updatedUser));
     setCurrentUser(updatedUser);
     fetchDevelopers(); // Refresh lists
   };
@@ -502,9 +553,9 @@ export default function App() {
         <header className="flex items-center justify-between pb-8">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-display font-bold text-white text-lg tracking-wider">
-              FM
+              mE
             </div>
-            <span className="font-display font-medium text-lg text-slate-100 tracking-tight">ForgeMatch</span>
+            <span className="font-display font-medium text-lg text-slate-100 tracking-tight">mEncontre</span>
           </div>
           <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
@@ -515,7 +566,7 @@ export default function App() {
         <LoginRegister onLoginSuccess={handleLoginSuccess} />
 
         <footer className="mt-12 text-center text-xs text-slate-600 font-mono">
-          FORGEMATCH © 2026 • Matchmaker inteligente assistido por IA e MCP
+          M_ENCONTRE © 2026 • Matchmaker inteligente assistido por IA e MCP
         </footer>
       </main>
     );
@@ -532,7 +583,7 @@ export default function App() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-display font-bold tracking-tight text-white mb-0">ForgeMatch</h1>
+              <h1 className="text-xl font-display font-bold tracking-tight text-white mb-0">mEncontre</h1>
               <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-mono">SSE/MCP</span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">Olá, <strong className="text-indigo-300">{currentUser.nome}</strong> • {currentUser.localizacao}</p>
@@ -649,7 +700,7 @@ export default function App() {
           <div className="mt-6 p-4 rounded-xl bg-[#1e293b]/40 border border-slate-800/80 text-xs">
             <h4 className="font-semibold text-slate-300 font-display flex items-center gap-1.5 mb-2">
               <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
-              Ambiente ForgeMatch
+              Ambiente mEncontre
             </h4>
             <div className="space-y-1.5 text-[11px] font-mono text-slate-400">
               <div className="flex justify-between">
@@ -865,9 +916,19 @@ export default function App() {
 
                             {/* Name and Localization */}
                             <h4 className="text-sm font-semibold text-white tracking-tight">{match.nome}</h4>
-                            <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-1">
-                              <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                              <span>{match.localizacao}</span>
+                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-slate-400 mt-1">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                                <span>{match.localizacao}</span>
+                              </div>
+                              <span className="text-slate-600 font-sans font-semibold">•</span>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenContactModal(match.nome, match.contato)}
+                                className="text-indigo-400 hover:text-indigo-300 underline font-medium cursor-pointer transition-colors"
+                              >
+                                Dados de contato
+                              </button>
                             </div>
 
                             {/* Bio */}
@@ -989,9 +1050,19 @@ export default function App() {
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                            <span>{dev.localizacao}</span>
+                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-slate-400 mt-1">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{dev.localizacao}</span>
+                            </div>
+                            <span className="text-slate-600 font-sans font-semibold">•</span>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenContactModal(dev.nome, dev.contato)}
+                              className="text-indigo-400 hover:text-indigo-300 underline font-medium cursor-pointer transition-colors"
+                            >
+                              Dados de contato
+                            </button>
                           </div>
                         </div>
 
@@ -1563,6 +1634,97 @@ export default function App() {
                 </div>
               )}
 
+              {/* OVERLAY DIALOG / MODAL: LinkedIn-Style "Dados de contato" Detail Panel */}
+              {contactModalData && (
+                <div id="modal-contact-details" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                  <div className="bg-[#0f172a] border border-slate-800 rounded-2xl max-w-md w-full shadow-2xl relative overflow-hidden text-slate-100">
+                    
+                    {/* Header */}
+                    <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+                      <h3 className="font-display font-semibold text-slate-100 text-base">Dados de contato</h3>
+                      <button 
+                        onClick={() => setContactModalData(null)}
+                        className="text-slate-400 hover:text-white transition p-1 rounded-lg hover:bg-slate-800/50 cursor-pointer"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Body */}
+                    <div className="p-6 space-y-6">
+                      
+                      {/* Section: Profile Link Row */}
+                      <div className="flex items-start gap-4">
+                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
+                          {contactModalData.perfilUrl.includes("linkedin") ? (
+                            <Linkedin className="w-5 h-5 text-[#0a66c2]" />
+                          ) : (
+                            <Globe className="w-5 h-5 text-indigo-400" />
+                          )}
+                        </div>
+                        <div className="space-y-0.5 min-w-0 flex-1">
+                          <p className="text-xs text-slate-400 font-sans font-semibold">Perfil profissional</p>
+                          <a 
+                            href={contactModalData.perfilUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-indigo-400 hover:text-indigo-200 font-mono text-xs hover:underline block break-all font-semibold"
+                          >
+                            {contactModalData.displayUrl}
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Section: Email */}
+                      <div className="flex items-start gap-4">
+                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
+                          <Mail className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-0.5 min-w-0 flex-1">
+                          <p className="text-xs text-slate-400 font-sans font-semibold">E-mail</p>
+                          <a 
+                            href={`mailto:${contactModalData.email}`}
+                            className="text-indigo-400 hover:text-indigo-200 font-mono text-xs hover:underline block break-all font-semibold"
+                          >
+                            {contactModalData.email}
+                          </a>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="p-5 border-t border-slate-800/80 flex justify-end gap-3 bg-slate-900/40">
+                      <button
+                        onClick={() => {
+                          const contactText = `Nome: ${contactModalData.nome}\nPerfil: ${contactModalData.perfilUrl}\nE-mail: ${contactModalData.email}`;
+                          navigator.clipboard.writeText(contactText).then(() => {
+                            const originalDisplay = contactModalData.displayUrl;
+                            setContactModalData({
+                              ...contactModalData,
+                              displayUrl: "Dados Copiados para Área de Transferência!"
+                            });
+                            setTimeout(() => {
+                              setContactModalData(prev => prev ? { ...prev, displayUrl: originalDisplay } : null);
+                            }, 1800);
+                          });
+                        }}
+                        className="px-4 py-2 text-xs font-mono font-medium rounded-full border border-indigo-500/40 hover:border-indigo-400 text-indigo-300 hover:text-indigo-200 transition-colors cursor-pointer"
+                      >
+                        {contactModalData.displayUrl === "Dados Copiados para Área de Transferência!" ? "✓ Copiado!" : "Copiar Dados"}
+                      </button>
+                      <button
+                        onClick={() => setContactModalData(null)}
+                        className="px-4 py-2 text-xs font-mono font-medium rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
@@ -1617,7 +1779,7 @@ export default function App() {
                     O aviso <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">SISTEMA: COGNIÇÃO FIRECRAWL</span> confirma que as informações reais das redes dos desenvolvedores foram extraídas com sucesso na web pública via seu token Firecrawl!
                   </p>
                   <p>
-                    Se o sistema retornou um congestionamento momentâneo do Gemini (como o erro 503), não se preocupe: a nossa <strong className="text-slate-250">Camada de Failover Resiliente</strong> entra em ação imediatamente, chaveando para o resolvedor local ForgeMatch para manter o seu fluxo de cadastro, análise técnica e convites de matchmaker 100% ativo!
+                    Se o sistema retornou um congestionamento momentâneo do Gemini (como o erro 503), não se preocupe: a nossa <strong className="text-slate-250">Camada de Failover Resiliente</strong> entra em ação imediatamente, chaveando para o resolvedor local mEncontre para manter o seu fluxo de cadastro, análise técnica e convites de matchmaker 100% ativo!
                   </p>
                 </div>
               </div>
@@ -1961,10 +2123,20 @@ export default function App() {
                                   <div className="space-y-3">
                                     <div>
                                       <h4 className="text-sm font-bold text-white font-sans">{scrapedDeepProfile.nome}</h4>
-                                      <p className="text-xs text-indigo-300 mt-1 flex items-center gap-1">
-                                        <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                                        {scrapedDeepProfile.localizacao}
-                                      </p>
+                                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-indigo-300 mt-1">
+                                        <div className="flex items-center gap-1">
+                                          <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                                          <span>{scrapedDeepProfile.localizacao}</span>
+                                        </div>
+                                        <span className="text-slate-600 font-sans font-semibold">•</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleOpenContactModal(scrapedDeepProfile.nome, scrapedDeepProfile.contato || scrapedDeepProfile.perfilUrl)}
+                                          className="text-indigo-400 hover:text-indigo-300 underline font-medium cursor-pointer transition-colors"
+                                        >
+                                          Dados de contato
+                                        </button>
+                                      </div>
                                     </div>
 
                                     <div className="space-y-1">

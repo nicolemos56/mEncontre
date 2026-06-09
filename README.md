@@ -1,88 +1,94 @@
+# ⚡ ForgeMatch — IA Matchmaker & Web Intelligence
 
-# ⚡ mEncontre — IA Matchmaker & Web Intelligence
+> Encontre o par de desenvolvimento e co-fundadores ideais para seus projetos de software, produtos e hackathons através de inteligência artificial profunda, raspagem de dados web em tempo real e análise cognitiva.
 
-**mEncontre** é uma plataforma de inteligência coletiva e recrutamento técnico projetada para hackathons e incubadoras. O sistema utiliza Inteligência Artificial e automação web para conectar desenvolvedores a projetos através de análise semântica de competências, eliminando a fricção na formação de squads de alta performance.
-
-Ao contrário de diretórios estáticos, o **mEncontre** minera dados em tempo real para validar a afinidade técnica entre membros, calculando um "Score de Compatibilidade" baseado em dados reais do GitHub, LinkedIn e outras redes profissionais.
+ForgeMatch é uma plataforma full-stack moderna que simplifica a busca de parceiros de código. Ela conecta instantaneamente desenvolvedores locais cadastrados com perfis técnicos reais e ativos minerados diretamente da internet (via redes como GitHub, LinkedIn e Bebee), permitindo análise de afinidade técnica, cálculo de afinidade via IA (**Score IA**) e extração inteligente de meios de contato direto para networking ativo.
 
 ---
 
 ## 🎨 Principais Recursos
 
-### 1. 🧠 Smart IA Matchmaker (O Coração do Sistema)
-O motor de busca não depende apenas de palavras-chave simples; ele utiliza processamento de linguagem natural para entender contextos complexos:
-*   **Busca Semântica:** Permite consultas como: *"Procuro um desenvolvedor Mobile com foco em segurança que já tenha trabalhado com APIs de pagamento"*.
-*   **AI Compatibility Score:** Um algoritmo proprietário analisa o perfil do candidato versus os requisitos do projeto, gerando uma pontuação de 0 a 100%.
-*   **Gestão de Networking:** Interface integrada para demonstrar interesse, enviar mensagens de boas-vindas e gerenciar o histórico de interações com potenciais parceiros.
+### 1. 🧠 Smart IA Matchmaker
+* **Busca Semântica Avançada:** Digite solicitações complexas em linguagem natural (ex: *"Preciso de alguém experiente em NLP e RAG com diploma de mestrado para o hackathon da Gemini"*).
+* **Cross-Sourcing:** Intercala perfis internos de desenvolvedores locais com resultados públicos reais minerados na web.
+* **Algoritmo de Compatibilidade (Score IA):** Pontuação de afinidade de 0% a 100% gerada por análise cognitiva de competências de cada candidato em relação às exigências do seu projeto.
+* **Demonstração de Interesse:** Registre suas tentativas de aproximação, envie mensagens personalizadas de boas-vindas e gerencie o histórico de respostas integrando meios de contato interativos de um clique (como links ou e-mails ativos).
 
-### 2. 🧪 Laboratório de Mineração (Firecrawl & IA Sandbox)
-Uma central avançada para expansão da base de talentos através de inteligência web:
-*   **Scraping Otimizado para LLM:** Integração com Firecrawl para converter páginas web complexas em Markdown limpo, pronto para processamento por IA.
-*   **Estruturação Cognitiva:** A IA identifica automaticamente competências, nomes, biografias e URLs de portfólio dentro de diretórios profissionais públicos.
-*   **Deep Crawling de Contato:** Varredura inteligente de subperfis para extração de canais de comunicação (como links de portfólio ou redes sociais), facilitando o networking direto.
+### 2. 🧪 Laboratório Firecrawl & Sandbox de IA
+A ferramenta possui uma central avançada de experimentos para minerar contatos em massa diretamente de páginas-alvo da web:
+* **Scraping e Consulta em Tempo Real:** Converte páginas públicas completas em documentos markdown limpíssimos e otimizados para consumo de LLMs.
+* **Detecção Cognitiva de Talentos:** Pede à IA para ler o layout completo de diretórios profissionais (como Bebee ou similares) e estruturar as competências técnicas, nomes, biografias e URLs de subperfis únicos.
+* **Rastreamento Profundo & Disponibilidade:** Executa uma segunda varredura em segundo plano em subperfis individuais para decifrar links ocultos de canais de comunicação direta (como botões *"Enviar Mensagem"* ou links externos de portfólio) e os amarra instantaneamente ao botão "Demonstrar Interesse" no ecossistema central!
 
 ### 3. 👥 Diretório de Talentos Local
-Uma visão organizada dos desenvolvedores já cadastrados no ecossistema:
-*   **Filtros Avançados:** Segmentação por stack tecnológica, região ou nível de experiência.
-*   **Interface Responsiva:** Cards intuitivos desenvolvidos com **React Motion** para uma experiência de usuário fluida e moderna.
+* Filtre devs locais ativos por habilidades técnicas específicas, cargo ou região.
+* Acompanhe detalhes curriculares, biografia condensada e canais de acesso em uma interface de Cards limpa e responsiva.
 
 ---
 
 ## 🛠️ Tecnologias e Arquitetura
 
-O mEncontre utiliza uma arquitetura Full-Stack modularizada, garantindo que operações pesadas de IA e Scraping sejam processadas com segurança no lado do servidor.
+O sistema emprega uma arquitetura full-stack moderna dividida entre cliente e servidor, priorizando desempenho robusto, segurança de chaves corporativas e modularidade de componentes:
 
-### **Frontend**
-*   **Core:** React 19 + TypeScript.
-*   **Build Tool:** Vite (Ultra-fast development).
-*   **Styling:** Tailwind CSS (Design System Minimalista).
-*   **Animations:** Framer Motion (Transições imersivas e estados de carregamento).
-
-### **Backend (Server-Side Proxy)**
-*   **Runtime:** Node.js com Express (Suporte nativo a ESM/TypeScript).
-*   **AI Engine:** Google Gemini 1.5 Flash (Performance de baixa latência para análise de dados).
-*   **Web Extraction:** Firecrawl API (Normalização de dados estruturados).
+* **Frontend:** React 19, TypeScript, **Vite**, **Tailwind CSS** para design moderno e minimalista e **Motion** para transições, micro-animações visuais e estados de carregamento imersivos.
+* **Backend:** Servidor customizado Express em Node.js suportando ESM e TypeScript nativos.
+* **Motores de IA:** Integração oficial com a SDK [@google/genai](https://www.npmjs.com/package/@google/genai) executando o modelo ultrarrápido **Gemini 3.5-flash**.
+* **Coleta Web:** Integração estruturada com a API **Firecrawl** para scraping instantâneo, consultas otimizadas e normalização de documentos em Markdown estruturado.
 
 ---
 
-## ⚙️ Configuração do Ambiente
+## ⚙️ Variáveis de Ambiente
 
-O sistema utiliza um **Server-Side Proxy** para proteger suas chaves de API. Nunca exponha seu arquivo `.env` publicamente.
-
-Crie um arquivo `.env` na raiz do projeto seguindo este modelo:
+Crie ou edite o arquivo `.env` (guie-se pelo `.env.example`) na raiz do seu projeto para fornecer as credenciais necessárias. O sistema opera de forma segura do lado do servidor (Server-Side Proxy) de forma a ocultar todas as chaves privadas do navegador:
 
 ```env
-# Configurações do Servidor
-PORT=3001
+# .env.example
+PORT=3000
+GEMINI_API_KEY=your_gemini_api_key_here
+FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+```
 
-# Google Gemini AI
-# Obtenha em: https://aistudio.google.com/
-GEMINI_API_KEY=sua_chave_aqui
+* **GEMINI_API_KEY:** Habilita o motor primário de cognição estruturada (Score IA, categorização, biografia aprofundada, análise contextual de perfil e mapeamento automatizado de termos técnicos).
+  * *Fallback Inteligente:* Em caso de ausência ou saturação temporária (erro 503) do Gemini, o servidor ativará automaticamente o algoritmo proprietário **ForgeMatch Local Scoring Engine**, impossibilitando travamento ou interrupção do fluxo de trabalho do usuário.
+* **FIRECRAWL_API_KEY:** Habilita a coleta de contatos web. (Uma chave padrão com limites de teste já vem nativamente embutida como reserva).
 
-# Firecrawl (Web Scraping)
-# Obtenha em: https://www.firecrawl.dev/
-FIRECRAWL_API_KEY=sua_chave_aqui
+---
 
-# URL do Frontend (Para proteção de CORS)
-FRONTEND_URL=http://localhost:5173
+## 🚀 Como Executar Localmente
+
+### Pré-requisitos
+Certifique-se de possuir o **Node.js** (v18 ou superior) instalado em sua máquina.
+
+### 1. Instalar as dependências
+```bash
+npm install
+```
+
+### 2. Iniciar o servidor de desenvolvimento
+Executa o compilador em tempo real e inicializa o servidor Express na porta **3000** com recarregamento sob demanda:
+```bash
+npm run dev
+```
+Acesse o aplicativo abrindo `http://localhost:3000`.
+
+### 3. Build de Produção
+Para compilar o aplicativo de forma empacotada e ultraeficiente pronta para contêineres e produção:
+```bash
+npm run build
+```
+O script compilará a aplicação de interface estática do Vite, agrupará o backend TypeScript compilando em código CommonJS otimizado único em `dist/server.cjs` via **esbuild** (evitando travamento por importações relativas estritas na nuvem) e gerará os mapas de depuração em `dist/`.
+
+### 4. Inicializar em Produção
+```bash
+npm run start
 ```
 
 ---
 
-## 🚀 Como Executar
+## 📂 Estrutura de Arquivos Principal
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/seu-usuario/m-encontre.git
-    ```
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-3.  **Inicie o servidor de desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
-
----
-DDD-tech
+* `server.ts`: Ponto de entrada do backend. Hospeda APIs de autenticação, base local sincronizada (`db.json`), proxy do Firecrawl e deciframento cognitivo do Gemini.
+* `src/App.tsx`: Orquestrador central da aplicação. Modula as abas de IA Matchmaker, Diretórios de Usuários, Laboratório Prático de Extração e o centro de configurações de usuário.
+* `src/main.tsx` & `index.html`: Portais de entrada de montagem da árvore Single Page Application do React no navegador.
+* `src/index.css`: Gerenciador de tema visual. Centraliza importações tipográficas (Inter, Space Grotesk, Fira Code) e regras de estilo do Tailwind CSS.
+* `metadata.json`: Informações de registro de plataforma e capacidades integradas em contêineres Cloud Run.

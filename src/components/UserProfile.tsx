@@ -69,7 +69,7 @@ export default function UserProfile({ currentUser, onProfileUpdate }: UserProfil
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-6">
         <div>
           <h2 className="text-xl font-display font-medium text-slate-100 flex items-center gap-2">
-            <User className="w-5 h-5 text-indigo-400" /> Meu Perfil do ForgeMatch
+            <User className="w-5 h-5 text-indigo-400" /> Meu Perfil do mEncontre
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Mantenha seu portfólio atualizado para que os algoritmos de IA te selecionem em buscas locais.

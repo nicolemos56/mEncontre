@@ -139,7 +139,7 @@ export default function LoginRegister({ onLoginSuccess }: LoginRegisterProps) {
             <Sparkles className="w-3.5 h-3.5" /> Fazer Matches Inteligentes
           </div>
           <h1 className="text-4xl lg:text-5xl font-display font-bold text-white tracking-tight leading-tight">
-            Forge<span className="text-indigo-400">Match</span>
+            mEncontre
           </h1>
           <p className="mt-4 text-slate-400 text-sm leading-relaxed">
             A plataforma de parcerias para desenvolvedores, criadores e engenheiros. Encontre colaboradores locais ou mapeie perfis externos na internet usando inteligência artificial de ponta.
@@ -223,7 +223,7 @@ export default function LoginRegister({ onLoginSuccess }: LoginRegisterProps) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="exemplo@forgematch.ao"
+                placeholder="exemplo@mencontre.ao"
                 className="w-full px-4 py-2.5 rounded-lg bg-slate-950/60 border border-slate-800 focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/80 outline-none transition text-slate-100 placeholder-slate-600 text-sm"
               />
             </div>
@@ -249,7 +249,7 @@ export default function LoginRegister({ onLoginSuccess }: LoginRegisterProps) {
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed mt-4 shadow-lg shadow-indigo-600/15"
             >
-              {loading ? "Carregando..." : "Entrar no ForgeMatch"}
+              {loading ? "Carregando..." : "Entrar no mEncontre"}
               <LogIn className="w-4 h-4" />
             </button>
           </form>
@@ -383,7 +383,7 @@ export default function LoginRegister({ onLoginSuccess }: LoginRegisterProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <button
               id="demo-user-andrade"
-              onClick={() => handleDemoLogin("andrade@forgematch.ao")}
+              onClick={() => handleDemoLogin("andrade@mencontre.ao")}
               disabled={loading}
               className="flex items-center justify-between p-3 rounded-lg bg-[#0f172a]/80 hover:bg-[#1e293b]/70 border border-slate-800/80 text-left transition group active:scale-[0.98]"
             >
@@ -396,7 +396,7 @@ export default function LoginRegister({ onLoginSuccess }: LoginRegisterProps) {
 
             <button
               id="demo-user-claudio"
-              onClick={() => handleDemoLogin("claudio@forgematch.ao")}
+              onClick={() => handleDemoLogin("claudio@mencontre.ao")}
               disabled={loading}
               className="flex items-center justify-between p-3 rounded-lg bg-[#0f172a]/80 hover:bg-[#1e293b]/70 border border-slate-800/80 text-left transition group active:scale-[0.98]"
             >

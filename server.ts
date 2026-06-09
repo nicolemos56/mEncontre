@@ -6,7 +6,6 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
@@ -20,7 +19,7 @@ const defaultDb = {
     {
       id: "u1",
       nome: "Andrade Silva",
-      email: "andrade@forgematch.ao",
+      email: "andrade@mencontre.ao",
       password: "password123",
       bio: "Desenvolvedor Frontend experiente apaixonado por interfaces refinadas e animações fluidas com Framer Motion e Tailwind. Ativo na comunidade tech de Angola.",
       skills: ["React", "Typescript", "TailwindCSS", "Vite", "Framer Motion"],
@@ -31,7 +30,7 @@ const defaultDb = {
     {
       id: "u2",
       nome: "Cláudio Santos",
-      email: "claudio@forgematch.ao",
+      email: "claudio@mencontre.ao",
       password: "password123",
       bio: "Engenheiro de Software focado no backend, modelagem de banco de dados e inteligência artificial. Criando novos microsserviços em FastAPI.",
       skills: ["Python", "FastAPI", "PostgreSQL", "Docker", "SQLAlchemy"],
@@ -42,7 +41,7 @@ const defaultDb = {
     {
       id: "u3",
       nome: "Mariana Costa",
-      email: "mariana@forgematch.br",
+      email: "mariana@mencontre.br",
       password: "password123",
       bio: "Desenvolvedora Mobile especializada em React Native e soluções híbridas fluidas. Adoro Hackathons e coding sprints.",
       skills: ["React Native", "Javascript", "iOS", "Android", "Redux"],
@@ -53,7 +52,7 @@ const defaultDb = {
     {
       id: "u4",
       nome: "Diogo Neves",
-      email: "diogo@forgematch.pt",
+      email: "diogo@mencontre.pt",
       password: "password123",
       bio: "Especialista em Go, sistemas distribuídos e infraestrutura escalável em nuvem com Kubernetes. Mentor de iniciantes.",
       skills: ["Go", "Docker", "Kubernetes", "gRPC", "Redis"],
@@ -64,7 +63,7 @@ const defaultDb = {
     {
       id: "u5",
       nome: "Filipe Mendes",
-      email: "filipe@forgematch.ao",
+      email: "filipe@mencontre.ao",
       password: "password123",
       bio: "Entusiasta de Web3, smart contracts e finanças descentralizadas (DeFi) com Solidity.",
       skills: ["Solidity", "Ethereum", "Web3", "Node.js"],
@@ -76,27 +75,142 @@ const defaultDb = {
   matches: []
 };
 
-// Database Helpers
+// Database Helpers (with in-memory fallback for read-only serverless filesystems like Vercel)
+let inMemoryDb: any = null;
+
 function readDb() {
+  if (inMemoryDb) {
+    return inMemoryDb;
+  }
   try {
     if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(defaultDb, null, 2), "utf8");
-      return defaultDb;
+      try {
+        fs.writeFileSync(DB_FILE, JSON.stringify(defaultDb, null, 2), "utf8");
+      } catch (writeErr) {
+        console.warn("[Memory DB] Could not write db.json on init, using in-memory mode");
+      }
+      inMemoryDb = JSON.parse(JSON.stringify(defaultDb));
+      return inMemoryDb;
     }
     const raw = fs.readFileSync(DB_FILE, "utf8");
-    return JSON.parse(raw);
+    inMemoryDb = JSON.parse(raw);
+    return inMemoryDb;
   } catch (err) {
     console.error("Error reading database:", err);
-    return defaultDb;
+    inMemoryDb = JSON.parse(JSON.stringify(defaultDb));
+    return inMemoryDb;
   }
 }
 
 function writeDb(data: any) {
+  inMemoryDb = data;
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf8");
   } catch (err) {
-    console.error("Error writing database:", err);
+    console.warn("[Memory DB] EROFS or Write Error (expected on serverless environments):", err.message || err);
   }
+}
+
+// Helper to filter out typical non-profile pages like videos, general articles, blogs or tutorials
+function filterAndCleanFirecrawlResults(results: any[]): any[] {
+  if (!Array.isArray(results)) return [];
+  
+  return results.filter((item: any) => {
+    if (!item) return false;
+    const url = (item.url || "").toLowerCase();
+    const title = (item.title || "").toLowerCase();
+    const description = (item.description || "").toLowerCase();
+    
+    // 1. Exclude blatant non-profile websites and video streaming platforms
+    const excludedDomains = [
+      "youtube.com", "youtu.be", "vimeo.com", "tiktok.com", "twitch.tv",
+      "wikipedia.org", "w3schools.com", "stackoverflow.com/questions", "stackexchange.com",
+      "reddit.com/r/", "pinterest.com", "news.", "noticias.", "medium.com/p/",
+      "slideshare.net", "academia.edu", "researchgate.net", "sciencedirect.com",
+      "coursera.org", "udemy.com", "pluralsight.com", "edx.org", "sololearn.com"
+    ];
+    
+    if (excludedDomains.some(domain => url.includes(domain))) {
+      return false;
+    }
+    
+    // 2. Exclude GitHub non-profile paths (issues, pull requests, etc.)
+    if (url.includes("github.com")) {
+      const excludedGithubPaths = [
+        "/issues", "/pull", "/issues/", "/pulls/", "/tree/", "/blob/", "/commit/",
+        "/releases", "/tags", "/wiki", "/actions", "/projects", "/trending", "/explore",
+        "/search", "/marketplace", "/features", "/pricing", "/about", "/contact", "/gists"
+      ];
+      if (excludedGithubPaths.some(path => url.includes(path))) {
+        return false;
+      }
+    }
+    
+    // 3. Exclude titles that imply tutorials, articles, courses, or events rather than human developers
+    const excludedKeywordsInTitle = [
+      "sessão", "sessao", "abertura", "palestra", "tutorial", "video", "vídeo", 
+      "curso", "playlist", "como fazer", "slides", "apresentação", "apresentacao", 
+      "artigo", "notícia", "noticia", "vaga", "job openings", "hiring", "recruitment", 
+      "conference", "conferência", "live stream", "streamed", "webinar", "workshop"
+    ];
+    
+    if (excludedKeywordsInTitle.some(kw => title.includes(kw))) {
+      return false;
+    }
+    
+    return true;
+  });
+}
+
+// Cleans conversational prefixes and suffixes to optimize web search for developer profiles
+function cleanForWebSearch(query: string): string {
+  let cleaned = query.trim();
+
+  // Strip wrapping quotes
+  cleaned = cleaned.replace(/^["'“`‘]+|["'”`’]+$/g, "").trim();
+
+  // Strip common conversational introductory patterns (case insensitive)
+  const introPatterns = [
+    /^\s*(estou\s+à\s+procura\s+de\s+um\s+|estou\s+à\s+procura\s+de\s+|estou\s+a\s+procura\s+de\s+um\s+|estou\s+a\s+procura\s+de\s+|procura-se\s+um\s+|procura-se\s+)/i,
+    /^\s*(procuro\s+um\s+|procuro\s+uma\s+|procuro\s+por\s+|procuro\s+)/i,
+    /^\s*(busco\s+um\s+|busco\s+uma\s+|busco\s+por\s+|busco\s+)/i,
+    /^\s*(preciso\s+de\s+um\s+|preciso\s+de\s+uma\s+|preciso\s+de\s+|preciso\s+)/i,
+    /^\s*(encontre\s+um\s+|encontre\s+uma\s+|encontre\s+por\s+|encontre\s+)/i,
+    /^\s*(quero\s+um\s+|quero\s+uma\s+|quero\s+)/i,
+    /^\s*(gostaria\s+de\s+encontrar\s+|gostaria\s+de\s+|gostaria\s+)/i,
+    /^\s*(i\s+want\s+to\s+find\s+|i\s+am\s+looking\s+for\s+a\s+|i\s+am\s+looking\s+for\s+|looking\s+for\s+a\s+|looking\s+for\s+)/i,
+    /^\s*(find\s+a\s+|find\s+)/i
+  ];
+
+  for (const pattern of introPatterns) {
+    cleaned = cleaned.replace(pattern, "");
+  }
+
+  // Strip common tail/suffix noises (e.g. "para o hackathon", "pro meu projeto")
+  const suffixPatterns = [
+    /\s+para\s+o\s+.*hacka?th?o?n.*$/i,
+    /\s+no\s+.*hacka?th?o?n.*$/i,
+    /\s+do\s+.*hacka?th?o?n.*$/i,
+    /\s+da\s+.*hacka?th?o?n.*$/i,
+    /\s+para\s+o\s+.*projeto.*$/i,
+    /\s+para\s+um\s+.*projeto.*$/i,
+    /\s+pro\s+.*projeto.*$/i,
+    /\s+pro\s+.*hacka?th?o?n.*$/i,
+    /\s+para\s+trabalhar.*$/i,
+    /\s+para\s+ajudar.*$/i,
+    /\s+para\s+fazermos.*$/i,
+    /\s+for\s+the\s+.*hacka?th?o?n.*$/i,
+    /\s+for\s+my\s+.*project.*$/i
+  ];
+
+  for (const pattern of suffixPatterns) {
+    cleaned = cleaned.replace(pattern, "");
+  }
+
+  // Clean hanging punctuations or leading/trailing trim issues
+  cleaned = cleaned.replace(/^[,.\s|:;]+|[,.\s|:;]+$/g, "").trim();
+
+  return cleaned;
 }
 
 // Firecrawl Search Tool with resilient API fallback & timeout handling
@@ -108,14 +222,15 @@ async function searchWithFirecrawl(prompt: string): Promise<any[]> {
   }
 
   try {
-    console.log(`[Firecrawl] Searching live web profiles for: "${prompt}"`);
+    const cleanedPrompt = cleanForWebSearch(prompt);
+    console.log(`[Firecrawl] Original search: "${prompt}" -> Cleaned search: "${cleanedPrompt}"`);
     
-    // Check if the prompt is already highly specific, contains pipe characters, emails, or is long.
-    // If it is, send it exactly as-is. Otherwise, add a helpful prefix to target developers.
-    let finalQuery = prompt.trim();
-    if (prompt.length < 40 && !prompt.toLowerCase().includes("portfolio") && !prompt.toLowerCase().includes("engineer") && !prompt.toLowerCase().includes("|")) {
-      finalQuery = `developer portfolio ${prompt}`;
+    let finalQuery = cleanedPrompt;
+    if (cleanedPrompt.length < 40 && !cleanedPrompt.toLowerCase().includes("portfolio") && !cleanedPrompt.toLowerCase().includes("engineer") && !cleanedPrompt.toLowerCase().includes("|") && !cleanedPrompt.toLowerCase().includes("developer") && !cleanedPrompt.toLowerCase().includes("at")) {
+      finalQuery = `developer portfolio ${cleanedPrompt}`;
     }
+
+    console.log(`[Firecrawl] Sending query to Firecrawl Search: "${finalQuery}"`);
 
     const response = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
@@ -125,7 +240,7 @@ async function searchWithFirecrawl(prompt: string): Promise<any[]> {
       },
       body: JSON.stringify({
         query: finalQuery,
-        limit: 3
+        limit: 12
       }),
       signal: AbortSignal.timeout(12500) // Generous 12.5 seconds to query real web endpoints thoroughly
     });
@@ -138,8 +253,10 @@ async function searchWithFirecrawl(prompt: string): Promise<any[]> {
 
     const result = await response.json() as any;
     if (result && result.success && Array.isArray(result.data)) {
-      console.log(`[Firecrawl] Found ${result.data.length} actual profiles online.`);
-      return result.data;
+      console.log(`[Firecrawl] Found ${result.data.length} actual profiles online before filtering.`);
+      const filtered = filterAndCleanFirecrawlResults(result.data);
+      console.log(`[Firecrawl] Kept ${filtered.length} actual profiles online after filtering.`);
+      return filtered;
     }
     return [];
   } catch (error: any) {
@@ -169,15 +286,14 @@ function getGenAI(): GoogleGenAI | null {
   return aiInstance;
 }
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
+const PORT = 3000;
 
-  // Middleware
-  app.use(express.json());
+// Middleware
+app.use(express.json());
 
-  // Initialize DB on boot
-  readDb();
+// Initialize DB on boot
+readDb();
 
   // API Route: Register
   app.post("/api/auth/register", (req, res) => {
@@ -339,16 +455,28 @@ async function startServer() {
         // Map the real Firecrawl results to candidates!
         firecrawlResults.forEach((item: any, idx: number) => {
           let titleStr = item.title || "Perfil Encontrado";
-          let cleanNome = titleStr
+          
+          // Split by common separators to isolate the person's name (e.g., "John Doe - Software Engineer" -> "John Doe")
+          let firstPart = titleStr;
+          const separators = [" | ", " - ", " · ", " : "];
+          for (const sep of separators) {
+            if (firstPart.includes(sep)) {
+              firstPart = firstPart.split(sep)[0];
+            }
+          }
+
+          let cleanNome = firstPart
             .replace(/ - LinkedIn/gi, "")
             .replace(/ \| LinkedIn/gi, "")
             .replace(/ - GitHub/gi, "")
             .replace(/ · GitHub/gi, "")
             .replace(/github - /gi, "")
             .replace(/\(.*\)/g, "")
+            .replace(/portfolio/gi, "")
             .trim();
           
-          if (!cleanNome || cleanNome.length < 2) {
+          if (!cleanNome || cleanNome.length < 2 || cleanNome.length > 30) {
+            // If the name is empty or looks like a long organic web sentence, fall back to a neat descriptive human title
             cleanNome = `Desenvolvedor Web #${idx + 1}`;
           }
 
@@ -483,7 +611,7 @@ async function startServer() {
       }
 
       const systemInstruction = `
-Você é o "ForgeMatch Helper", um assistente inteligente especializado em selecionar e indicar desenvolvedores ideais para projetos, squads de hackathons e parcerias técnicas.
+Você é o "mEncontre Helper", um assistente inteligente especializado em selecionar e indicar desenvolvedores ideais para projetos, squads de hackathons e parcerias técnicas.
 Você receberá:
 1. Uma solicitação em linguagem natural (ex: "Procuro dev Frontend que saiba React ou Tailwind em Luanda").
 2. Uma lista de desenvolvedores locais ativos em nossa base (formato JSON).
@@ -508,7 +636,9 @@ Analise os candidatos e responda ESTRITAMENTE em formato JSON combinando exatame
 
 Regras Cruciais:
 - Se houver devs locais adequados na lista fornecida, priorize-os listando-os como fonte "interno" com seus dados exatos.
-- Se "incluirWeb" for verdadeiro, use PRIORITARIAMENTE os perfis reais fornecidos na seção "PERFIS REAIS DA WEB ENCONTRADOS VIA FIRECRAWL" para criar e preencher de 1 a 3 desenvolvedores externos, marcando-os como fonte "web". Caso a lista esteja vazia ou incompleta, sinta-se livre para complementar ou sugerir outros desenvolvedores externos dealta relevância com base no seu conhecimento técnico.
+- Se "incluirWeb" for verdadeiro, use PRIORITARIAMENTE os perfis reais fornecidos na seção "PERFIS REAIS DA WEB ENCONTRADOS VIA FIRECRAWL" para criar e preencher de 1 a 3 desenvolvedores externos, marcando-os como fonte "web". Caso a lista esteja vazia ou incompleta, sinta-se livre para complementar ou sugerir outros desenvolvedores externos de alta relevância com base no seu conhecimento técnico.
+- REQUISITO CRÍTICO DE IDENTIDADE PESSOAL (mEncontre): O campo "nome" deve ser estritamente o NOME PRÓPRIO Humano do desenvolvedor (ex: "Alexandre Silva", "Juliana Costa", "Carlos Neves"). NUNCA insira títulos de postagens, nomes de vídeos do YouTube, títulos de repositórios do GitHub, palestras ou termos genéricos (evite coisas como "Sessão de abertura...", "Tutorial de RAG...", "Repositorio React", "GitHub API", etc.) no campo de "nome"! Se a fonte da web for o repositório de alguém ou uma publicação/artigo técnico, infira o nome próprio do desenvolvedor autor ou utilize o seu username/handle de forma limpa.
+- REQUISITO DE BIOGRAFIA PROFISSIONAL: O campo "bio" deve ser construído na perspectiva de um resumo de perfil profissional daquela pessoa. NUNCA inclua estatísticas de visualização de vídeo, datas, tempos de upload, ou jargões como "Streamed 11 months ago ...more ...". Se o documento da web contiver esses dados, limpe-os por completo.
 - Você deve ordenar os resultados por score_ia em ordem decrescente.
 - Só retorne JSON válido. Não adicione markdown fora do bloco de código json, não adicione tag pré-textuais, apenas o json limpo.
 `;
@@ -569,7 +699,7 @@ ${firecrawlQueryContext}`,
       console.warn("Gemini API call failed with error, applying instant local fallback recovery with parsed Firecrawl results:", err);
       // Fallback matching logic if Gemini fails or is busy (e.g. 503 error)
       const sorted = getLocalFallbackMatches(prompt, incluirWeb, localDevelopers, firecrawlResults);
-      let avisoErr = "Aviso: O motor principal de IA (Gemini) está muito congestionado de momento e retornou erro de indisponibilidade (503). Ativamos automaticamente o algoritmo inteligente reserva ForgeMatch para calcular as pontuações e extrair candidatos locais sem nenhuma interrupção!";
+      let avisoErr = "Aviso: O motor principal de IA (Gemini) está muito congestionado de momento e retornou erro de indisponibilidade (503). Ativamos automaticamente o algoritmo inteligente reserva mEncontre para calcular as pontuações e extrair candidatos locais sem nenhuma interrupção!";
       if (incluirWeb && firecrawlResults && firecrawlResults.length > 0) {
         avisoErr += ` Além disso, mapeamos ${firecrawlResults.length} candidatos reais da pesquisa do Firecrawl com sucesso direto no dashboard!`;
       }
@@ -1030,7 +1160,7 @@ Retorne APENAS o JSON limpo, sem marcas adicionais de markdown fora do bloco jso
         {
           id: "sys_" + Date.now(),
           senderId: "system",
-          senderNome: "ForgeMatch Bot",
+          senderNome: "mEncontre Bot",
           texto: "Parabéns! O convite de match foi aceito com sucesso. O chat oficial está aberto. Comecem a planejar e forjar essa squad de desenvolvimento fantástica!",
           dataEnvio: new Date().toISOString()
         }
@@ -1095,24 +1225,30 @@ Retorne APENAS o JSON limpo, sem marcas adicionais de markdown fora do bloco jso
   });
 
   // Integrate Vite server in development
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    // Production Assets Static Serving
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+  async function run() {
+    if (process.env.NODE_ENV !== "production") {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } else {
+      // Production Assets Static Serving
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
+
+    if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+      app.listen(PORT, "0.0.0.0", () => {
+        console.log(`[mEncontre Server] running on http://0.0.0.0:${PORT}`);
+      });
+    }
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[ForgeMatch Server] running on http://0.0.0.0:${PORT}`);
-  });
-}
+  run();
 
-startServer();
+  export default app;

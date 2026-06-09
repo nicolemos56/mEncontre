@@ -3,7 +3,7 @@
     {
       "id": "u1",
       "nome": "Andrade Silva",
-      "email": "andrade@forgematch.ao",
+      "email": "andrade@mencontre.ao",
       "password": "password123",
       "bio": "Desenvolvedor Frontend experiente apaixonado por interfaces refinadas e animações fluidas com Framer Motion e Tailwind. Ativo na comunidade tech de Angola.",
       "skills": [
@@ -20,7 +20,7 @@
     {
       "id": "u2",
       "nome": "Cláudio Santos",
-      "email": "claudio@forgematch.ao",
+      "email": "claudio@mencontre.ao",
       "password": "password123",
       "bio": "Engenheiro de Software focado no backend, modelagem de banco de dados e inteligência artificial. Criando novos microsserviços em FastAPI.",
       "skills": [
@@ -37,7 +37,7 @@
     {
       "id": "u3",
       "nome": "Mariana Costa",
-      "email": "mariana@forgematch.br",
+      "email": "mariana@mencontre.br",
       "password": "password123",
       "bio": "Desenvolvedora Mobile especializada em React Native e soluções híbridas fluidas. Adoro Hackathons e coding sprints.",
       "skills": [
@@ -54,7 +54,7 @@
     {
       "id": "u4",
       "nome": "Diogo Neves",
-      "email": "diogo@forgematch.pt",
+      "email": "diogo@mencontre.pt",
       "password": "password123",
       "bio": "Especialista em Go, sistemas distribuídos e infraestrutura escalável em nuvem com Kubernetes. Mentor de iniciantes.",
       "skills": [
@@ -71,7 +71,7 @@
     {
       "id": "u5",
       "nome": "Filipe Mendes",
-      "email": "filipe@forgematch.ao",
+      "email": "filipe@mencontre.ao",
       "password": "password123",
       "bio": "Entusiasta de Web3, smart contracts e finanças descentralizadas (DeFi) com Solidity.",
       "skills": [
@@ -85,5 +85,25 @@
       "disponivel": true
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "m_1780823895503",
+      "usuarioId": "u1",
+      "nomePerfil": "NLP, LLM, RAG, MCP, Agents: o guia definitivo para devs",
+      "contatoPerfil": "https://www.youtube.com/watch?v=_-zE9mZVGWc",
+      "skillsPerfil": [
+        "NLP",
+        "RAG",
+        "LLM",
+        "AI"
+      ],
+      "localizacaoPerfil": "Remoto / Web Pública",
+      "scoreIa": 0.9,
+      "fonte": "web",
+      "motivo": "Extraído em tempo real usando a API Firecrawl. Este perfil corresponde diretamente aos seus termos de busca com foco em NLP, RAG, LLM.",
+      "status": "pendente",
+      "dataCriacao": "2026-06-07T09:18:15.503Z",
+      "mensagens": []
+    }
+  ]
 }
