@@ -2,7 +2,7 @@
 
 > Encontre o par de desenvolvimento e co-fundadores ideais para seus projetos de software, produtos e hackathons através de inteligência artificial profunda, raspagem de dados web em tempo real e análise cognitiva.
 
-ForgeMatch é uma plataforma full-stack moderna que simplifica a busca de parceiros de código. Ela conecta instantaneamente desenvolvedores locais cadastrados com perfis técnicos reais e ativos minerados diretamente da internet (via redes como GitHub, LinkedIn e Bebee), permitindo análise de afinidade técnica, cálculo de afinidade via IA (**Score IA**) e extração inteligente de meios de contato direto para networking ativo.
+ForgeMatch é uma plataforma full-stack moderna que simplifica a busca de parceiros de código. Ela conecta instantaneamente desenvolvedores locais cadastrados com perfis técnicos reais e ativos minerados diretamente da internet (via redes como GitHub, LinkedIn e Bebee), permitindo análise de afinidade técnica, cálculo de afinidade via IA (**Score IA**) e extração inteligente de meios de contato direto para networking ativo..
 
 ---
 
